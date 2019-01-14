@@ -1,36 +1,31 @@
 package com.hencoder.hencoderpracticedraw4.practice
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Point
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 
 import com.hencoder.hencoderpracticedraw4.R
 
-class Practice08MatrixScaleView : View {
-    internal var paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    internal var bitmap: Bitmap
-    internal var point1 = Point(200, 200)
-    internal var point2 = Point(600, 200)
+class Practice08MatrixScaleView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
 
-    constructor(context: Context) : super(context) {}
+    private val point1 = PointF(200f, 200f)
+    private val point2 = PointF(600f, 200f)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
-
-    init {
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
-    }
+    private val matrix1 = Matrix()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        matrix1.reset()
+        matrix1.postScale(1.2f, 1.2f, point1.x + bitmap.width / 2, point1.y + bitmap.height / 2)
+        canvas.matrix = matrix1
+        canvas.drawBitmap(bitmap, point1.x, point1.y, paint)
 
-        canvas.drawBitmap(bitmap, point1.x.toFloat(), point1.y.toFloat(), paint)
-        canvas.drawBitmap(bitmap, point2.x.toFloat(), point2.y.toFloat(), paint)
+        matrix1.reset()
+        matrix1.postScale(0.6f, 1.5f, point2.x + bitmap.width / 2, point2.y + bitmap.height / 2)
+        canvas.matrix = matrix1
+        canvas.drawBitmap(bitmap, point2.x, point2.y, paint)
     }
 }

@@ -11,21 +11,12 @@ import android.view.View
 
 import com.hencoder.hencoderpracticedraw4.R
 
-class Practice11CameraRotateView : View {
-    internal var paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    internal var bitmap: Bitmap
-    internal var point1 = Point(200, 200)
-    internal var point2 = Point(600, 200)
+class Practice11CameraRotateView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
 
-    constructor(context: Context) : super(context) {}
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
-
-    init {
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
-    }
+    private val point1 = Point(200, 200)
+    private val point2 = Point(600, 200)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
