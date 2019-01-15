@@ -3,44 +3,34 @@ package com.hencoder.hencoderpracticedraw4.practice
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Camera
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
-import android.graphics.Point
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 
 import com.hencoder.hencoderpracticedraw4.R
 
-class Practice13CameraRotateHittingFaceView : View {
-    internal var paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    internal var bitmap: Bitmap
-    internal var point = Point(200, 50)
-    internal var camera = Camera()
-    internal var matrix = Matrix()
-    internal var degree: Int = 0
-    internal var animator = ObjectAnimator.ofInt(this, "degree", 0, 360)
-
-    constructor(context: Context) : super(context) {}
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
-
-    init {
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
-        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width * 2, bitmap.height * 2, true)
-        bitmap.recycle()
-        bitmap = scaledBitmap
-
-        animator.duration = 5000
-        animator.interpolator = LinearInterpolator()
-        animator.repeatCount = ValueAnimator.INFINITE
+class Practice13CameraRotateHittingFaceView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val point = PointF(200f, 50f)
+    private val bitmap by lazy(LazyThreadSafetyMode.NONE) {
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.maps)
+        Bitmap.createScaledBitmap(bitmap, bitmap.width * 2, bitmap.height * 2, true)
     }
+
+    private val matrix1 = Matrix()
+    private val camera = Camera().apply {
+        val newZ = -resources.displayMetrics.density * 6
+        setLocation(0f, 0f, newZ)
+    }
+
+    private val animator = ObjectAnimator.ofFloat(this, "degree", 0f, 360f).apply {
+        duration = 5000
+        interpolator = LinearInterpolator()
+        repeatCount = ValueAnimator.INFINITE
+    }
+
+    private var degree: Float = 0f
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -52,29 +42,28 @@ class Practice13CameraRotateHittingFaceView : View {
         animator.end()
     }
 
-    fun setDegree(degree: Int) {
+    fun setDegree(degree: Float) {
         this.degree = degree
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         val bitmapWidth = bitmap.width
         val bitmapHeight = bitmap.height
-        val centerX = point.x + bitmapWidth / 2
-        val centerY = point.y + bitmapHeight / 2
+        val centerX = point.x + bitmapWidth / 2f
+        val centerY = point.y + bitmapHeight / 2f
 
         camera.save()
-        matrix.reset()
-        camera.rotateX(degree.toFloat())
-        camera.getMatrix(matrix)
+        matrix1.reset()
+        camera.rotateX(degree)
+        camera.getMatrix(matrix1)
         camera.restore()
-        matrix.preTranslate((-centerX).toFloat(), (-centerY).toFloat())
-        matrix.postTranslate(centerX.toFloat(), centerY.toFloat())
+        matrix1.preTranslate((-centerX), (-centerY))
+        matrix1.postTranslate(centerX, centerY)
         canvas.save()
-        canvas.concat(matrix)
-        canvas.drawBitmap(bitmap, point.x.toFloat(), point.y.toFloat(), paint)
+        canvas.concat(matrix1)
+        canvas.drawBitmap(bitmap, point.x, point.y, paint)
         canvas.restore()
     }
 }
